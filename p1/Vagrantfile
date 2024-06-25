@@ -1,20 +1,30 @@
+# Vagrantfile
+
 Vagrant.configure("2") do |config|
-	config.vm.define "mradwanS" do |server|
-		server.vm.box = "debian/bullseye64"
-		server.vm.hostname = "mradwanS"
-		server.vm.network "private_network", ip: "192.168.56.110"
-		server.vm.provider "virtualbox" do |vb|
-			vb.name = "mradwanS"
-			vb.memory = "512"
-			vb.cpus = 1
-		end
-		server.vm.provision "shell", inline: <<-SHELL
-			apt-get update -y
-			apt-get upgrade -y
-			apt-get install -y curl
-			curl sfL https://get.k3s.io | sh -
-		SHELL
+	config.vm.box = "debian/bullseye64"
+  
+	# Server machine
+	config.vm.define "server" do |server|
+	  server.vm.hostname = "serverS"
+	  server.vm.network "private_network", ip: "192.168.56.110"
+	  server.vm.provider "virtualbox" do |vb|
+		vb.name = "serverS"
+		vb.memory = "1024"
+		vb.cpus = 1
+	  end
+	  server.vm.provision "shell", path: "scripts/provision_server.sh"
 	end
-
-
-	
+  
+	# ServerWorker machine
+	config.vm.define "serverworker" do |worker|
+	  worker.vm.hostname = "serverSW"
+	  worker.vm.network "private_network", ip: "192.168.56.111"
+	  worker.vm.provider "virtualbox" do |vb|
+		vb.name = "serverSW"
+		vb.memory = "1024"
+		vb.cpus = 1
+	  end
+	  worker.vm.provision "shell", path: "scripts/provision_worker.sh"
+	end
+  end
+  
