@@ -1,19 +1,22 @@
 #!/bin/bash
 
+# Update and install dependencies
 sudo apt-get update
 sudo apt-get install -y curl
 
+# Install K3s server
 curl -sfL https://get.k3s.io | sh -
 
-# Allow node to accept traffic from the worker node
-sudo iptables -A INPUT -p tcp --dport 6443 -j ACCEPT
+# Install kubectl
+sudo apt-get install -y kubectl
 
+sudo cat /var/lib/rancher/k3s/server/token >> /vagrant/token.env
 
-sudo cat /var/lib/rancher/k3s/server/node-token > /vagrant/confs/node-token
+# Copy K3s config to default kube config location
+mkdir -p /home/vagrant/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
+sudo chown vagrant:vagrant /home/vagrant/.kube/config
 
-# Enable kubectl access without sudo
-sudo chmod 644 /etc/rancher/k3s/k3s.yaml
-
-# Copy kubeconfig for local access
-sudo cp /etc/rancher/k3s/k3s.yaml /vagrant/confs/k3s.yaml
-sudo chown vagrant:vagrant /vagrant/confs/k3s.yaml
+# Allow passwordless SSH for vagrant user
+mkdir -p /home/vagrant/.ssh
+chmod 700 /home/vagrant/.ssh
