@@ -10,6 +10,8 @@ curl -sfL https://get.k3s.io | sh -
 # Install kubectl
 sudo apt-get install -y kubectl
 
+rm -f /vagrant/token.env
+
 sudo cat /var/lib/rancher/k3s/server/token >> /vagrant/token.env
 
 # Copy K3s config to default kube config location
