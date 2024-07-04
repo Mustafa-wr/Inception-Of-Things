@@ -1,15 +1,9 @@
 #!/bin/bash
-
-# Update and install dependencies
 sudo apt-get update
 sudo apt-get install -y curl
 
-# Load the K3S token from a file
-K3S_TOKEN=$(cat /vagrant/token.env)
+K3S_TOKEN="/vagrant/confs/server_token.txt"
 
-# Install K3s agent
-curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN="$K3S_TOKEN" sh -
-
-# Allow passwordless SSH for vagrant user
-mkdir -p /home/vagrant/.ssh
-chmod 700 /home/vagrant/.ssh
+curl -sfL https://get.k3s.io | K3S_URL="https://192.168.56.110:6443" K3S_TOKEN_FILE=${K3S_TOKEN}  INSTALL_K3S_EXEC="--flannel-iface=eth1" sh -
+sudo rm -rf /vagrant/confs/*
+sudo apt install -y net-tools
